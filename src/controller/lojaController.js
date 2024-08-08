@@ -1,83 +1,9 @@
-import express from 'express';
-import cors from 'cors';
-import multer from 'multer';
+import { Router } from "express";
+const endpoints = Router();
 
-const servidor = express();
-servidor.use(express.json());
-servidor.use(cors());
 
-let uploadPerfil = multer({ dest: './storage/perfil' });
 
-servidor.use('/storage/perfil', express.static('./storage/perfil'))
-
-servidor.get('/helloworld', (req, resp) => {
-    resp.send('hello world');
-});
-
-servidor.get('/calculadora/somar/:n1/:n2', (req, resp) => {
-
-    if (isNaN(req.params.n1) || isNaN(req.params.n2)) {
-        resp.status(400).send({
-            erro: 'Os parâmetros devem ser números.'
-        })
-        return;
-    }
-
-    let n1 = Number(req.params.n1);
-    let n2 = Number(req.params.n2);
-
-    let soma = n1 + n2;
-
-    resp.send({
-        entrada: {
-            numero1: n1,
-            numero2: n2,
-        },
-        soma: soma
-    });
-
-});
-
-servidor.get('/calculadora/somarv2', (req, resp) => {
-    let n1 = Number(req.query.num1);
-    let n2 = Number(req.query.num2);
-
-    let soma = n1 + n2;
-
-    resp.send({
-        soma: soma,
-    });
-});
-
-servidor.post('/media', (req, resp) => {
-    let n1 = req.body.nota1;
-    let n2 = req.body.nota2;
-    let n3 = req.body.nota3;
-
-    let media = n1 + n2 + n3 / 3;
-
-    resp.send({
-        media: media
-    });
-
-});
-
-servidor.post('/dobros', (req, resp) => {
-    let nums = req.body.numeros
-
-    let nums2 = []
-
-    for (let i = 0; i < nums.length; i++) {
-        nums2[i] = nums[i] * 2;
-    }
-
-    resp.send({
-        "numeros": nums,
-        "Dobro": nums2
-    });
-});
-
-servidor.post('/loja/pedido', (req, resp) => {
+endpoints.post('/loja/pedido', (req, resp) => {
 
     try {
 
@@ -117,7 +43,7 @@ servidor.post('/loja/pedido', (req, resp) => {
     }
 });
 
-servidor.post('/loja/pedido/completo', (req, resp) => {
+endpoints.post('/loja/pedido/completo', (req, resp) => {
 
     try {
 
@@ -163,19 +89,4 @@ servidor.post('/loja/pedido/completo', (req, resp) => {
 
 });
 
-servidor.post('/perfil/capa', uploadPerfil.single('imagem'), (req, resp) => {
-	let caminho = req.file.path;
-	let extensao = req.file.mimetype;
-	let nome = req.file.originalname;
-
-	resp.send({
-		caminho: caminho,
-		extensao: extensao,
-		nome: nome
-	})
-})
-
-servidor.listen(
-    5001,
-    () => console.log('Api subiu na porta 5001')
-);
+export default endpoints;
